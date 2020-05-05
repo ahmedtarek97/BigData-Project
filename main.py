@@ -1,10 +1,47 @@
+#!/usr/bin/env python3
+
 # Put here the main flow of the program
-from support import computeInter
-import pandas as pd
 import numpy as np
+from apriori import *
 
-data_frame = pd.DataFrame(np.array([[1, 2, 3], [4, 5, 6],[1,2,4],[1,3,4],[1,3,5]]))
+ColumnNames{
+    5:"Customer",
+    7:"Protestant",
+    9:"No religion",
+    11:"Living together",
+    13:"Singles",
+    15:"Household with children",
+    17:"Medium level education",
+    19:"High status",
+    21:"Farmer",
+    23:"Skilled labourers",
+    25:"Social class A",
+    27:"Social class B2"
+}
 
+L2{
 
-print(computeInter(data_frame))
+    1: "Successful hedonists",
+
+    2: "Driven Growers"
+
+    3: "Average Family"
+
+    4: "Career Loners"
+
+    5: "Living well"
+
+    6: "Cruising Seniors"
+
+    7: "Retired and Religeous"
+
+    8: "Family with grown ups"
+
+    9: "Conservative families"
+
+    10: "Farmers"
+}
+
+DataList = AcquireData()
+
 

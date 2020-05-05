@@ -8,8 +8,8 @@ class rule:
   def confidence(self):
       # a -> b 
       #confidence = support(a,b)/ support(a)
-      temp_num =self.left +self.right 
-      num = support(temp_num)
+      attributes = pd.concat([self.right, self.left])
+      num = support(attributes)
       den = support(self.left)
       conf = num / den
       return conf *100
