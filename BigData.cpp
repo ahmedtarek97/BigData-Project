@@ -91,12 +91,12 @@ public:
 void AquireData(){
 	ifstream inputFile;
 	inputFile.open("ticdata2000.txt");
-	vector<vector<int>> DataList(5822,vector<int>(12));
+	DataList = vector<vector<int>>(5822,vector<int>(12));
 
 	for(int i=0;i<5822;i++){
 		vector<int> tmp(49);
 		for(int j=0;j<49;j++){
-			cin>>tmp[j];
+			inputFile>>tmp[j];
 		}
 		for(int j=4;j<16;j++){
 			DataList[i][j-4] = tmp[j];
@@ -126,11 +126,11 @@ vector<attribute> initialize(){
 
 int main(){
 
-//	vector<vector<int>> DataList = AquireData();
-//	vector<attribute> attributes = initialize(DataList);
-//	for(int i=0;i<attributes.size();i++){
-//		cout<<attributes[i].name<<" "<<attributes[i].col<<" "<<attributes[i].val<<'\n';
-//	}
+	AquireData();
+	vector<attribute> attributes = initialize();
+	for(int i=0;i<attributes.size();i++){
+		cout<<attributes[i].name<<" "<<attributes[i].col<<" "<<attributes[i].val<<'\n';
+	}
 
 
 
