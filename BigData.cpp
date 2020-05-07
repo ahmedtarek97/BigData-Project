@@ -22,7 +22,7 @@ public:
     }
 
 };
-int computeInter(vector<attribute> list)
+int computeIntersect(vector<attribute> list)
 {
 	//in case of there are 2 element in the same colum
 	for (int i = 0; i < list.size()-1; i++)
@@ -61,7 +61,7 @@ int computeInter(vector<attribute> list)
 
 float support(vector<attribute> list)
 {
-	return (((float)computeInter(list) / 5822) * 100);
+	return (((float)computeIntersect(list) / 5822) * 100);
 }
 
 class rule{
@@ -109,12 +109,12 @@ void AquireData(){
 
 vector<attribute> initialize(){
 	vector<attribute> attributes;
-	map<attribute,bool> vis;
+	vector<vector<bool>> vis(12,vector<bool>(6000));
 	for(int i=0;i<12;i++){
 		for(int j=0;j<5822;j++){
 			attribute tmpAttr = attribute(ColumnNames[i],i,DataList[j][i]);
-			if(vis[tmpAttr])continue;
-			vis[tmpAttr] =true;
+			if(vis[i][DataList[j][i]])continue;
+			vis[i][DataList[j][i]] =true;
 			attributes.push_back(tmpAttr);
 		}
 	}
