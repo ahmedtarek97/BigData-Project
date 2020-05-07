@@ -8,7 +8,7 @@ class rule:
   def confidence(self):
       # a -> b 
       #confidence = support(a,b)/ support(a)
-      attributes = pd.concat([self.right, self.left])
+      attributes = self.right + self.left
       num = support(attributes)
       den = support(self.left)
       conf = num / den
