@@ -2,9 +2,9 @@
 
 using namespace std;
 
-vector<string> ColumnNames = {"Customer","Roman catholic","Protestant","Other religion","No religion",
-"Married","Living together","Other relation","Singles","Household without children","Household with children",
-"High level education"};
+vector<string> ColumnNames = {"MOSHOOFD","MGODRK","MGODPR","MGODOV","MGODGE",
+"MRELGE","MRELSA","MRELOV","MFALLEEN","MFGEKIND","MFWEKIND",
+"MOPLHOOG"};
 vector<vector<int>> DataList;
 
 class attribute{
@@ -174,27 +174,43 @@ vector<rule> apriori(vector<attribute> &attributes,float minSupport,float minCon
 	}
 	// Getting the valid rules from the best attributes we got after computing the support.
 	vector<rule> AssociationRules;
+	map<pair<vector<pair<int,int>>,vector<pair<int,int>>>,bool> vis;
 	for(int i = 0; i < maxCombs.size();i++){
-		vector<attribute> currentAttr = maxCombs[i];
+		vector<attribute> tmpCurrentAttr = maxCombs[i];
+		vector<int> perm(tmpCurrentAttr.size());
+		for(int j=0;j<perm.size();j++)perm[j]=j;
+		do{
 
-		for(int x = 0;x<currentAttr.size();x++){
-			rule tmpRule;
-			vector<attribute> onRight;
-			// Get the ones before the current and put them on the right side.
-			for(int y = 0;y<x;y++)onRight.push_back(currentAttr[y]);
-			// combinations on all other attributes.
-			for(int y=x;y<currentAttr.size();y++){
-				tmpRule.left.push_back(currentAttr[y]);
-				tmpRule.right.clear();
-				tmpRule.right = onRight;
-				for(int z = y+1;z<currentAttr.size();z++){
-					tmpRule.right.push_back(currentAttr[z]);
-				}
-				if(tmpRule.right.size()!=0&&tmpRule.left.size()!=0){
-					if(tmpRule.confidence()>=minConf)AssociationRules.push_back(tmpRule);
+			vector<attribute> currentAttr(perm.size());
+			for(int j=0;j<perm.size();j++)currentAttr[j] = tmpCurrentAttr[perm[j]];
+
+			for(int x = 0;x<currentAttr.size();x++){
+				rule tmpRule;
+				vector<attribute> onRight;
+				// Get the ones before the current and put them on the right side.
+				for(int y = 0;y<x;y++)onRight.push_back(currentAttr[y]);
+				// combinations on all other attributes.
+				for(int y=x;y<currentAttr.size();y++){
+					tmpRule.left.push_back(currentAttr[y]);
+					tmpRule.right.clear();
+					tmpRule.right = onRight;
+					for(int z = y+1;z<currentAttr.size();z++){
+						tmpRule.right.push_back(currentAttr[z]);
+					}
+					if(tmpRule.right.size()!=0&&tmpRule.left.size()!=0){
+						vector<pair<int,int>> l,r;
+						for(int t = 0;t<tmpRule.left.size();t++)l.push_back({tmpRule.left[t].col,tmpRule.left[t].val});
+						for(int t = 0;t<tmpRule.right.size();t++)r.push_back({tmpRule.right[t].col,tmpRule.right[t].val});
+						sort(l.begin(),l.end());
+						sort(r.begin(),r.end());
+						if(!vis[{l,r}]&&tmpRule.confidence()>=minConf){
+							AssociationRules.push_back(tmpRule);
+							vis[{l,r}]=true;
+						}
+					}
 				}
 			}
-		}
+		}while(next_permutation(perm.begin(),perm.end()));
 	}
 	return AssociationRules;
 
@@ -205,7 +221,7 @@ int main(){
 
 	AquireData();
 	vector<attribute> attributes = initialize();
-	vector<rule> AssociationRules = apriori(attributes,10,10);
+	vector<rule> AssociationRules = apriori(attributes,20,70);
 	for(int i = 0;i<AssociationRules.size();i++){
 		rule tmp = AssociationRules[i];
 		for(int j=0;j<tmp.left.size();j++)cout<<tmp.left[j].name<<" "<<tmp.left[j].val<<" ,";
