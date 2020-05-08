@@ -74,19 +74,16 @@ class rule{
 public:
     vector<attribute> right;
     vector<attribute> left;
-    rule(vector<attribute> &r, vector<attribute> &l)
-    {
-        right = r;
-        left = l;
-    }
-    double confidence()
-    {
 
-      right.insert( right.end(), left.begin(), left.end() );
-      vector<attribute> attributes = right;
-      double num = support(attributes);
-      double den = support(left);
-      double conf = num / den;
+    float confidence()
+    {
+      vector<attribute> tmpRight;
+      for(int i=0;i<left.size();i++)tmpRight.push_back(left[i]);
+      for(int i=0;i<right.size();i++)tmpRight.push_back(right[i]);
+      vector<attribute> attributes = tmpRight;
+      float num = support(attributes);
+      float den = support(left);
+      float conf = num / den;
 
       return conf * 100 ;
     }
@@ -175,15 +172,31 @@ vector<rule> apriori(vector<attribute> &attributes,float minSupport,float minCon
 		}
 		attributes = newAttr;
 	}
-	for(int i=0;i<maxCombs.size();i++){
-		for(int j=0;j<maxCombs[i].size();j++){
-			cout<<maxCombs[i][j].name<<" "<<maxCombs[i][j].val<<"        ";
-		}
-		cout<<'\n';
-	}
+	// Getting the valid rules from the best attributes we got after computing the support.
+	vector<rule> AssociationRules;
+	for(int i = 0; i < maxCombs.size();i++){
+		vector<attribute> currentAttr = maxCombs[i];
 
-	vector<rule> trash;
-	return trash;
+		for(int x = 0;x<currentAttr.size();x++){
+			rule tmpRule;
+			vector<attribute> onRight;
+			// Get the ones before the current and put them on the right side.
+			for(int y = 0;y<x;y++)onRight.push_back(currentAttr[y]);
+			// combinations on all other attributes.
+			for(int y=x;y<currentAttr.size();y++){
+				tmpRule.left.push_back(currentAttr[y]);
+				tmpRule.right.clear();
+				tmpRule.right = onRight;
+				for(int z = y+1;z<currentAttr.size();z++){
+					tmpRule.right.push_back(currentAttr[z]);
+				}
+				if(tmpRule.right.size()!=0&&tmpRule.left.size()!=0){
+					if(tmpRule.confidence()>=minConf)AssociationRules.push_back(tmpRule);
+				}
+			}
+		}
+	}
+	return AssociationRules;
 
 }
 
@@ -192,8 +205,14 @@ int main(){
 
 	AquireData();
 	vector<attribute> attributes = initialize();
-	apriori(attributes,25,10);
-
+	vector<rule> AssociationRules = apriori(attributes,10,10);
+	for(int i = 0;i<AssociationRules.size();i++){
+		rule tmp = AssociationRules[i];
+		for(int j=0;j<tmp.left.size();j++)cout<<tmp.left[j].name<<" "<<tmp.left[j].val<<" ,";
+		cout<<"  -->  ";
+		for(int j=0;j<tmp.right.size();j++)cout<<tmp.right[j].name<<" "<<tmp.right[j].val<<" ,";
+		cout<<'\n';
+	}
 
 
 }
