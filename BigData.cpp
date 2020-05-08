@@ -77,15 +77,36 @@ public:
 
     float confidence()
     {
-      vector<attribute> tmpRight;
-      for(int i=0;i<left.size();i++)tmpRight.push_back(left[i]);
-      for(int i=0;i<right.size();i++)tmpRight.push_back(right[i]);
-      vector<attribute> attributes = tmpRight;
-      float num = support(attributes);
-      float den = support(left);
-      float conf = num / den;
+	  vector<attribute> attributes;
+	  for(int i=0;i<left.size();i++)attributes.push_back(left[i]);
+	  for(int i=0;i<right.size();i++)attributes.push_back(right[i]);
 
-      return conf * 100 ;
+	  float num = support(attributes);
+	  float den = support(left);
+	  float conf = num / den;
+
+	  return conf * 100 ;
+    }
+
+    float lift(){
+    	vector<attribute> attributes;
+		for(int i=0;i<left.size();i++)attributes.push_back(left[i]);
+		for(int i=0;i<right.size();i++)attributes.push_back(right[i]);
+		float num = support(attributes)/100;
+		float den = (support(left)/100) * (support(right)/100);
+		return num/den;
+    }
+    float leverage(){
+    	vector<attribute> attributes;
+		for(int i=0;i<left.size();i++)attributes.push_back(left[i]);
+		for(int i=0;i<right.size();i++)attributes.push_back(right[i]);
+		return support(attributes)/100 - (support(left)/100)*(support(right)/100);
+    }
+    float RuleSupport(){
+    	vector<attribute> attributes;
+		for(int i=0;i<left.size();i++)attributes.push_back(left[i]);
+		for(int i=0;i<right.size();i++)attributes.push_back(right[i]);
+		return support(attributes);
     }
 
 
@@ -217,6 +238,8 @@ vector<rule> apriori(vector<attribute> &attributes,float minSupport,float minCon
 }
 
 
+
+
 int main(){
 
 	AquireData();
@@ -224,9 +247,19 @@ int main(){
 	vector<rule> AssociationRules = apriori(attributes,20,70);
 	for(int i = 0;i<AssociationRules.size();i++){
 		rule tmp = AssociationRules[i];
-		for(int j=0;j<tmp.left.size();j++)cout<<tmp.left[j].name<<" "<<tmp.left[j].val<<" ,";
+		for(int j=0;j<tmp.left.size();j++){
+			cout<<tmp.left[j].name<<" ("<<tmp.left[j].val<<")";
+			if(j!=tmp.left.size()-1)cout<<", ";
+		}
 		cout<<"  -->  ";
-		for(int j=0;j<tmp.right.size();j++)cout<<tmp.right[j].name<<" "<<tmp.right[j].val<<" ,";
+		for(int j=0;j<tmp.right.size();j++){
+			cout<<tmp.right[j].name<<" ("<<tmp.right[j].val<<")";
+			if(j!=tmp.right.size()-1)cout<<", ";
+		}
+		cout<<"                 lift("<<tmp.lift()<<")";
+		cout<<"                 leverage("<<tmp.leverage()<<")";
+		cout<<"                 support("<<tmp.RuleSupport()<<"%)";
+		cout<<"                 confidence("<<tmp.confidence()<<"%)";
 		cout<<'\n';
 	}
 
